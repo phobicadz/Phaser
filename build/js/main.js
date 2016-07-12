@@ -66,7 +66,7 @@ var Bellend;
                 this.background = this.add.sprite(80, 0, 'menu-background');
                 this.input.onDown.addOnce(function () {
                     _this.game.state.start('main');
-                    alert('Balls');
+                    // alert('Balls');
                 });
             };
             return Menu;
