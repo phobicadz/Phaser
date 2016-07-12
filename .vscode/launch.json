@@ -2,6 +2,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Attach to chrome",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "sourceMaps": true,
+            "url": "http://localhost:8080"
+        },
+        {
+            "name": "Launch index.html",
+            "type": "chrome",
+            "request": "launch",
+            "file": "${workspaceRoot}/build/index.html",
+            "sourceMaps": true,
+            "runtimeExecutable": "C:/Users/adam.chamberlain/AppData/Local/Google/Chrome/Application/chrome.exe"
+        }
+,
+        {
             "name": "Launch",
             "type": "node",
             "request": "launch",
@@ -18,7 +35,7 @@
                 "NODE_ENV": "development"
             },
             "externalConsole": false,
-            "sourceMaps": false,
+            "sourceMaps": true,
             "outDir": null
         },
         {

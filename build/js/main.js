@@ -36,8 +36,8 @@ var Bellend;
                 _super.apply(this, arguments);
             }
             Preload.prototype.preload = function () {
-                this.preloadBar = this.add.sprite(0, 148, 'preload-bar');
-                this.load.setPreloadSprite(this.preloadBar);
+                //     this.preloadBar = this.add.sprite(0, 148, 'preload-bar');
+                //    this.load.setPreloadSprite(this.preloadBar);
                 this.load.image('menu-background', 'assets/images/menu-background.png');
                 this.load.image('paddle', 'assets/images/paddle.png');
                 this.load.image('brick', 'assets/images/brick.png');

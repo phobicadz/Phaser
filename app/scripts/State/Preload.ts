@@ -3,8 +3,8 @@ module Bellend.State {
     private preloadBar: Phaser.Sprite;
 
     preload() {
-      this.preloadBar = this.add.sprite(0, 148, 'preload-bar');
-      this.load.setPreloadSprite(this.preloadBar);
+ //     this.preloadBar = this.add.sprite(0, 148, 'preload-bar');
+  //    this.load.setPreloadSprite(this.preloadBar);
 
       this.load.image('menu-background', 'assets/images/menu-background.png');
 
