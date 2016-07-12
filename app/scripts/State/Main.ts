@@ -8,8 +8,7 @@ module Bellend.State {
     ball:any;
 
     create() {
-      this.stage.backgroundColor = 0xffff00;
-      
+      this.stage.backgroundColor = 0xffff00;    
       // Create game objects here
       this.physics.startSystem(Phaser.Physics.ARCADE);
       this.world.enableBody=true;
