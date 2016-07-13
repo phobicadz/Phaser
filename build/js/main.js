@@ -36,8 +36,8 @@ var Bellend;
                     }
                 }
                 this.ball = this.add.sprite(200, 300, 'ball');
-                this.ball.body.velocity.x = 250;
-                this.ball.body.velocity.y = 250;
+                this.ball.body.velocity.x = 200;
+                this.ball.body.velocity.y = 200;
                 this.ball.body.bounce.setTo(1);
                 this.ball.body.collideWorldBounds = true;
             }
