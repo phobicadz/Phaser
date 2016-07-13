@@ -2,12 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch localhost with sourcemaps",
+            "name": "Launch localhost in Chrome with sourcemaps",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:8080/build/index.html",
             "webRoot": "${workspaceRoot}/build/js",
-            "runtimeExecutable": "${workspaceRoot}/launch.bat",
+            "runtimeExecutable": "${workspaceRoot}/launch.bat", // launches chrome in debug mode (make sure http-server is running in workspace directory)
             "sourceMaps": true
         },
         {
