@@ -1,6 +1,5 @@
 module Bellend.State {
   export class Main extends Phaser.State {
-
     left:Phaser.Key;
     right:Phaser.Key;
     paddle:Phaser.Sprite;
@@ -14,10 +13,8 @@ module Bellend.State {
       this.world.enableBody=true;
       this.left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
       this.right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-
        // Add the paddle at the bottom of the screen
       this.paddle = this.add.sprite(200, 400, 'paddle');
-
       // Make sure the paddle won't move when it hits the ball
       this.paddle.body.immovable = true;
       this.bricks = this.add.group();
@@ -43,7 +40,6 @@ module Bellend.State {
     // Make sure the ball will bounce when hitting something
     this.ball.body.bounce.setTo(1); 
     this.ball.body.collideWorldBounds = true;
-
     }
 
     update() {
@@ -51,11 +47,10 @@ module Bellend.State {
           this.paddle.body.velocity.x = -300; }
       else if (this.right.isDown) {
           this.paddle.body.velocity.x = 300; }
-    // Stop the paddle when no key is pressed
+      // Stop the paddle when no key is pressed
       else {
           this.paddle.body.velocity.x = 0; } 
-
-        // Add collisions between the paddle and the ball
+       // Add collisions between the paddle and the ball
       this.physics.arcade.collide(this.paddle, this.ball);
       // Call the 'hit' function when the ball hits a brick
       this.physics.arcade.collide(this.ball, this.bricks, this.hit, null, this);
@@ -66,7 +61,8 @@ module Bellend.State {
       }
   }
 
-    hit(ball,brick) {
+
+  hit(ball,brick) {
       brick.kill();
     }
   }
