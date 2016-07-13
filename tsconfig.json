@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "target":"es6",
+        "sourceMap": true,
+        "removeComments": true,
+        "outFile": "build/js/main.js"
+    },
+    "files": [
+        "app/scripts/State/Boot.ts",
+        "app/scripts/State/Main.ts",
+        "app/scripts/State/Menu.ts",
+        "app/scripts/State/Preload.ts",
+        "app/scripts/Game.ts"
+    ]
+}
