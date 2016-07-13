@@ -10,4 +10,5 @@
             "runtimeExecutable": "${workspaceRoot}/launch.bat", // launches chrome in debug mode (make sure http-server is running in workspace directory)
             "sourceMaps": true
         }
+    ]
 }
