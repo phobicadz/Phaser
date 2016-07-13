@@ -2,54 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch localhost in Chrome with sourcemaps",
+            "name": "Launch",
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:8080/build/index.html",
             "webRoot": "${workspaceRoot}/build/js",
             "runtimeExecutable": "${workspaceRoot}/launch.bat", // launches chrome in debug mode (make sure http-server is running in workspace directory)
             "sourceMaps": true
-        },
-        {
-            "name": "Launch",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceRoot}/build/js/main.js",
-            "stopOnEntry": false,
-            "args": [],
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": null,
-            "runtimeExecutable": null,
-            "runtimeArgs": [
-                "--nolazy"
-            ],
-            "env": {
-                "NODE_ENV": "development"
-            },
-            "externalConsole": false,
-            "sourceMaps": true,
-            "outDir": null
-        },
-        {
-            "name": "Attach",
-            "type": "node",
-            "request": "attach",
-            "port": 5858,
-            "address": "localhost",
-            "restart": false,
-            "sourceMaps": false,
-            "outDir": null,
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
-        },
-        {
-            "name": "Attach to Process",
-            "type": "node",
-            "request": "attach",
-            "processId": "${command.PickProcess}",
-            "port": 5858,
-            "sourceMaps": false,
-            "outDir": null
         }
-    ]
 }
