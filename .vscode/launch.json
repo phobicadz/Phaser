@@ -7,6 +7,7 @@
             "request": "launch",
             "url": "http://localhost:8080/build/index.html",
             "webRoot": "${workspaceRoot}/build/js",
+            "runtimeArgs": ["${workspaceRoot}/launch.bat"],
             "runtimeExecutable": "${workspaceRoot}/launch.bat", // launches chrome in debug mode (make sure http-server is running in workspace directory)
             "sourceMaps": true
         }

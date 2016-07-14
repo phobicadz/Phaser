@@ -10,6 +10,7 @@ module Bellend.State {
       this.load.image('paddle', 'assets/images/paddle.png');
       this.load.image('brick', 'assets/images/brick.png');  
       this.load.image('ball','assets/images/ball.png');
+      this.load.image('bubble','assets/images/bubble256.png');
       
       // Load remaining assets here
     }

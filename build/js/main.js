@@ -19,6 +19,17 @@ var Bellend;
     var State;
     (function (State) {
         class Main extends Phaser.State {
+            constructor(...args) {
+                super(...args);
+                this.invaderSeed = 0;
+                this.invader = [
+                    "0", "1", "1", "1", "0",
+                    "1", "0", "1", "0", "1",
+                    "1", "0", "1", "0", "1",
+                    "1", "1", "1", "1", "1",
+                    "1", "0", "1", "0", "1"];
+                this.g_noise = 0xDEADBABE;
+            }
             create() {
                 this.stage.backgroundColor = 0xffff00;
                 this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -40,6 +51,8 @@ var Bellend;
                 this.ball.body.velocity.y = 200;
                 this.ball.body.bounce.setTo(1);
                 this.ball.body.collideWorldBounds = true;
+                this.createBubbles();
+                this.createInvader();
             }
             update() {
                 if (this.left.isDown) {
@@ -57,8 +70,48 @@ var Bellend;
                     this.game.state.start('main');
                 }
             }
+            createBubbles() {
+                var delay = 0;
+                for (var i = 0; i < 40; i++) {
+                    var sprite = this.add.sprite(-100 + (this.world.randomX), 600, 'bubble');
+                    sprite.scale.set(this.rnd.realInRange(0.1, 0.6));
+                    var speed = this.rnd.between(4000, 6000);
+                    this.add.tween(sprite).to({ y: -256 }, speed, Phaser.Easing.Sinusoidal.InOut, true, delay, 1000, false);
+                    delay += 200;
+                }
+            }
             hit(ball, brick) {
                 brick.kill();
+            }
+            createInvader() {
+                var invaderSeed = this.g_noise;
+                var i;
+                var x;
+                var y;
+                for (i = 0; i < 5 * 5; i++)
+                    this.invader[i] = 0;
+                for (y = 0; y < 5; y++) {
+                    for (x = 0; x < 5; x++) {
+                        if (x < 3) {
+                            this.invader[x + y * 5] = (this.myRand() & 0x1).toString;
+                        }
+                        else {
+                            this.invader[x + y * 5] = this.invader[(4 - x) + y * 5];
+                        }
+                    }
+                }
+                var text = this.game.create.texture('invader', this.invader, 4, 4, 0);
+                this.game.add.sprite(300, 300, 'invader');
+            }
+            myRand() {
+                var taps = 0x80306031;
+                var l = this.g_noise;
+                if (l & 0x1)
+                    l = (1 << 31) | ((l ^ taps) >> 1);
+                else
+                    l = (l >> 1);
+                this.g_noise = l;
+                return l;
             }
         }
         State.Main = Main;
@@ -89,6 +142,7 @@ var Bellend;
                 this.load.image('paddle', 'assets/images/paddle.png');
                 this.load.image('brick', 'assets/images/brick.png');
                 this.load.image('ball', 'assets/images/ball.png');
+                this.load.image('bubble', 'assets/images/bubble256.png');
             }
             create() {
                 this.game.state.start('menu');
