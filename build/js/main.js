@@ -7,7 +7,7 @@ var Bellend;
                 this.load.image('preload-bar', 'assets/images/preload-bar.png');
             }
             create() {
-                this.game.stage.backgroundColor = 0xFF0FF0;
+                this.game.stage.backgroundColor = 0x000000;
                 this.game.state.start('preload');
             }
         }
@@ -29,9 +29,27 @@ var Bellend;
                     "1", "1", "1", "1", "1",
                     "1", "0", "1", "0", "1"];
                 this.g_noise = 0xDEADBABE;
+                this.dudeData = [
+                    '.......3.....',
+                    '......333....',
+                    '....5343335..',
+                    '...332333333.',
+                    '..33333333333',
+                    '..37773337773',
+                    '..38587778583',
+                    '..38588888583',
+                    '..37888888873',
+                    '...333333333.',
+                    '.F....5556...',
+                    '3E34.6757.6..',
+                    '.E.55.666.5..',
+                    '......777.5..',
+                    '.....6..7....',
+                    '.....7..7....'
+                ];
             }
             create() {
-                this.stage.backgroundColor = 0xffff00;
+                this.stage.backgroundColor = 0xFFFFFF;
                 this.physics.startSystem(Phaser.Physics.ARCADE);
                 this.world.enableBody = true;
                 this.left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -41,7 +59,7 @@ var Bellend;
                 this.bricks = this.add.group();
                 for (var i = 0; i < 5; i++) {
                     for (var j = 0; j < 5; j++) {
-                        var brick = this.add.sprite(55 + i * 60, 55 + j * 35, 'brick');
+                        var brick = this.add.sprite(55 + i * 60, 55 + j * 35, this.createInvader(i * 5 + j));
                         brick.body.immovable = true;
                         this.bricks.add(brick);
                     }
@@ -51,8 +69,6 @@ var Bellend;
                 this.ball.body.velocity.y = 200;
                 this.ball.body.bounce.setTo(1);
                 this.ball.body.collideWorldBounds = true;
-                this.createBubbles();
-                this.createInvader();
             }
             update() {
                 if (this.left.isDown) {
@@ -83,25 +99,36 @@ var Bellend;
             hit(ball, brick) {
                 brick.kill();
             }
-            createInvader() {
+            createInvader(id) {
                 var invaderSeed = this.g_noise;
                 var i;
                 var x;
                 var y;
                 for (i = 0; i < 5 * 5; i++)
-                    this.invader[i] = 0;
+                    this.invader[i] = "0";
                 for (y = 0; y < 5; y++) {
                     for (x = 0; x < 5; x++) {
                         if (x < 3) {
-                            this.invader[x + y * 5] = (this.myRand() & 0x1).toString;
+                            this.invader[x + y * 5] = (this.myRand() & 0x1).toString();
                         }
                         else {
                             this.invader[x + y * 5] = this.invader[(4 - x) + y * 5];
                         }
                     }
                 }
-                var text = this.game.create.texture('invader', this.invader, 4, 4, 0);
-                this.game.add.sprite(300, 300, 'invader');
+                var colour = this.rnd.between(0, 15).toString(16).toUpperCase();
+                var spritearray = [];
+                for (i = 0; i < 5; i++) {
+                    var line = "";
+                    for (x = 0; x < 5; x++) {
+                        if (this.invader[i * 5 + x] == "0")
+                            line += ".";
+                        else
+                            line += colour;
+                    }
+                    spritearray.push(line);
+                }
+                return this.game.create.texture('invader' + id, spritearray, 5, 5, 0);
             }
             myRand() {
                 var taps = 0x80306031;
