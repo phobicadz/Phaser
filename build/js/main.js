@@ -35,9 +35,9 @@ var Bellend;
                         this.bricks.add(brick);
                     }
                 }
-                this.ball = this.add.sprite(200, 300, 'ball');
-                this.ball.body.velocity.x = 200;
-                this.ball.body.velocity.y = 200;
+                this.ball = this.add.sprite(200, 50, 'ball');
+                this.ball.body.velocity.x = 300;
+                this.ball.body.velocity.y = 300;
                 this.ball.body.bounce.setTo(1);
                 this.ball.body.collideWorldBounds = true;
             }

@@ -32,10 +32,10 @@ module Bellend.State {
     }
 
      // Add the ball 
-    this.ball = this.add.sprite(200, 300, 'ball');  
+    this.ball = this.add.sprite(200, 50, 'ball');  
     // Give the ball some initial speed
-    this.ball.body.velocity.x = 200;
-    this.ball.body.velocity.y = 200;
+    this.ball.body.velocity.x = 300;
+    this.ball.body.velocity.y = 300;
 
     // Make sure the ball will bounce when hitting something
     this.ball.body.bounce.setTo(1); 
