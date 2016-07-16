@@ -4,6 +4,7 @@
 /// <reference path='State/Preload.ts'/>
 /// <reference path='State/Menu.ts'/>
 /// <reference path='State/Main.ts'/>
+/// <reference path='State/Invader.ts'/>
 
 module Bellend {
   export class Game extends Phaser.Game {
@@ -17,6 +18,8 @@ module Bellend {
     }
   }
 }
+
+// same as window.onload() = function {}
 
 window.onload = () => {
   var game = new Bellend.Game();

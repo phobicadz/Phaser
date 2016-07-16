@@ -5,7 +5,7 @@ module Bellend.State {
     }
 
     create() {
-      this.game.stage.backgroundColor = 0xFF0FF0;
+      this.game.stage.backgroundColor = 0x000000;
 
       // Assign global settings here
       
