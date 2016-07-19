@@ -11,7 +11,9 @@ module Bellend.State {
       this.load.image('brick', 'assets/images/brick.png');  
       this.load.image('ball','assets/images/ball.png');
       this.load.image('bubble','assets/images/bubble256.png');
-      
+      this.load.image('bullet', 'assets/images/bullet.png');
+      this.load.image('ship', 'assets/images/shmup-ship.png');
+
       // Load remaining assets here
     }
 

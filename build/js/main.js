@@ -25,38 +25,26 @@ var Bellend;
                 this.world.enableBody = true;
                 this.left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
                 this.right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-                this.paddle = this.add.sprite(200, 400, 'paddle');
-                this.paddle.body.immovable = true;
-                this.bricks = this.add.group();
-                Bellend.invader.gameRef = this.game;
-                for (var i = 0; i < 5; i++) {
-                    var inv = Bellend.invader.createInvader(i);
-                    for (var j = 0; j < 10; j++) {
-                        var brick = this.add.sprite(55 + j * 60, 55 + i * 35, inv);
-                        brick.body.immovable = true;
-                        this.bricks.add(brick);
-                    }
-                }
-                this.ball = this.add.sprite(200, 300, 'ball');
-                this.ball.body.velocity.x = 200;
-                this.ball.body.velocity.y = 200;
-                this.ball.body.bounce.setTo(1);
-                this.ball.body.collideWorldBounds = true;
+                this.fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+                this.weapon = this.game.add.weapon(1, 'bullet');
+                this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
+                this.weapon.bulletAngleOffset = 90;
+                this.weapon.bulletSpeed = 400;
+                this.ship = this.add.sprite(320, 300, 'ship');
+                this.game.physics.arcade.enable(this.ship);
+                this.createInvaders();
+                this.physics.arcade.overlap(this.weapon.bullets, this.bricks, function hit(x, y) { alert('collide'); }, null, this);
             }
             update() {
+                this.ship.body.velocity.x = 0;
                 if (this.left.isDown) {
-                    this.paddle.body.velocity.x = -300;
+                    this.ship.body.velocity.x = -200;
                 }
                 else if (this.right.isDown) {
-                    this.paddle.body.velocity.x = 300;
+                    this.ship.body.velocity.x = 200;
                 }
-                else {
-                    this.paddle.body.velocity.x = 0;
-                }
-                this.physics.arcade.collide(this.paddle, this.ball);
-                this.physics.arcade.collide(this.ball, this.bricks, this.hit, null, this);
-                if (this.ball.y > this.paddle.y) {
-                    this.game.state.start('main');
+                if (this.fireButton.isDown) {
+                    this.weapon.fire(this.ship);
                 }
             }
             createBubbles() {
@@ -69,8 +57,22 @@ var Bellend;
                     delay += 200;
                 }
             }
-            hit(ball, brick) {
+            createInvaders() {
+                this.bricks = this.add.group();
+                for (let i = 0; i < 5; i++) {
+                    let inv = Bellend.invader.createInvader(i, this.game);
+                    for (let j = 0; j < 10; j++) {
+                        let brick = this.add.sprite(55 + j * 60, 55 + i * 35, inv);
+                        brick.body.immovable = true;
+                        this.bricks.add(brick);
+                    }
+                }
+            }
+            hit(weapon, brick) {
                 brick.kill();
+            }
+            render() {
+                this.weapon.debug();
             }
         }
         State.Main = Main;
@@ -102,6 +104,8 @@ var Bellend;
                 this.load.image('brick', 'assets/images/brick.png');
                 this.load.image('ball', 'assets/images/ball.png');
                 this.load.image('bubble', 'assets/images/bubble256.png');
+                this.load.image('bullet', 'assets/images/bullet.png');
+                this.load.image('ship', 'assets/images/shmup-ship.png');
             }
             create() {
                 this.game.state.start('menu');
@@ -112,59 +116,58 @@ var Bellend;
 })(Bellend || (Bellend = {}));
 var Bellend;
 (function (Bellend) {
-    class invader {
-        constuctor() {
-        }
-        static createInvader(id) {
-            var invaderSeed = invader.g_noise;
-            var i;
-            var x;
-            var y;
+    var invader;
+    (function (invader_1) {
+        let invader = [
+            "0", "1", "1", "1", "0",
+            "1", "0", "1", "0", "1",
+            "1", "0", "1", "0", "1",
+            "1", "1", "1", "1", "1",
+            "1", "0", "1", "0", "1"];
+        let g_noise = 0xDEADBABE;
+        function createInvader(id, gameRef) {
+            let invaderSeed = g_noise;
+            let i;
+            let x;
+            let y;
             for (i = 0; i < 5 * 5; i++)
-                this.invader[i] = "0";
+                invader[i] = "0";
             for (y = 0; y < 5; y++) {
                 for (x = 0; x < 5; x++) {
                     if (x < 3) {
-                        this.invader[x + y * 5] = (this.myRand() & 0x1).toString();
+                        invader[x + y * 5] = (myRand() & 0x1).toString();
                     }
                     else {
-                        this.invader[x + y * 5] = this.invader[(4 - x) + y * 5];
+                        invader[x + y * 5] = invader[(4 - x) + y * 5];
                     }
                 }
             }
-            var colour = invader.gameRef.rnd.between(0, 15).toString(16).toUpperCase();
-            var spritearray = [];
+            let colour = gameRef.rnd.between(0, 15).toString(16).toUpperCase();
+            let spritearray = [];
             for (i = 0; i < 5; i++) {
-                var line = "";
+                let line = "";
                 for (x = 0; x < 5; x++) {
-                    if (this.invader[i * 5 + x] == "0")
+                    if (invader[i * 5 + x] == "0")
                         line += ".";
                     else
                         line += colour;
                 }
                 spritearray.push(line);
             }
-            return invader.gameRef.create.texture('invader' + id, spritearray, 4, 4, 0);
+            return gameRef.create.texture('invader' + id, spritearray, 4, 4, 0);
         }
-        static myRand() {
-            var taps = 0x80306031;
-            var l = this.g_noise;
+        invader_1.createInvader = createInvader;
+        function myRand() {
+            let taps = 0x80306031;
+            let l = g_noise;
             if (l & 0x1)
                 l = (1 << 31) | ((l ^ taps) >> 1);
             else
                 l = (l >> 1);
-            this.g_noise = l;
+            g_noise = l;
             return l;
         }
-    }
-    invader.invader = [
-        "0", "1", "1", "1", "0",
-        "1", "0", "1", "0", "1",
-        "1", "0", "1", "0", "1",
-        "1", "1", "1", "1", "1",
-        "1", "0", "1", "0", "1"];
-    invader.g_noise = 0xDEADBABE;
-    Bellend.invader = invader;
+    })(invader = Bellend.invader || (Bellend.invader = {}));
 })(Bellend || (Bellend = {}));
 var Bellend;
 (function (Bellend) {
