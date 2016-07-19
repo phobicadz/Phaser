@@ -4,9 +4,11 @@ module Bellend.State {
     right:Phaser.Key;
     fireButton:Phaser.Key;
     paddle:Phaser.Sprite;
-    bricks:Phaser.Group;
+    invaders:Phaser.Group;
     ball:Phaser.Sprite;
-    weapon:Phaser.Weapon;
+    bullets:Phaser.Group;
+    bullet:Phaser.Sprite;
+    bulletTime:number = 0;
     ship:Phaser.Sprite;
 
     create() {
@@ -16,22 +18,22 @@ module Bellend.State {
         this.world.enableBody=true;
         this.left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         this.right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-        this.fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-        this.weapon = this.game.add.weapon(1, 'bullet');
-
-        //  The bullet will be automatically killed when it leaves the world bounds
-        this.weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS;
-        //  Because our bullet is drawn facing up, we need to offset its rotation:
-        this.weapon.bulletAngleOffset = 90;
-        //  The speed at which the bullet is fired
-        this.weapon.bulletSpeed = 400;
+        this.fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);    
         this.ship = this.add.sprite(320, 300, 'ship');
         this.game.physics.arcade.enable(this.ship);
-        //  Tell the Weapon to track the 'player' Sprite, offset by 14px horizontally, 0 vertically
-        //this.weapon.trackSprite(this.ship, 14, 0);
-       
+  
+        // create the random invaders!     
         this.createInvaders();
-        this.physics.arcade.overlap(this.weapon.bullets,this.bricks,function hit(x,y) {alert('collide')},null,this);   
+     
+        //  Our bullet group
+        this.bullets = this.game.add.group();
+        this.bullets.enableBody = true;
+        this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        this.bullets.createMultiple(30, 'bullet');
+        this.bullets.setAll('anchor.x', 0.5);
+        this.bullets.setAll('anchor.y', 1);
+        this.bullets.setAll('outOfBoundsKill', true);
+        this.bullets.setAll('checkWorldBounds', true);
     }
 
     update() {
@@ -47,8 +49,10 @@ module Bellend.State {
         }
         if (this.fireButton.isDown)
         {
-            this.weapon.fire(this.ship);
+            this.fireBullet();
         }
+
+        this.game.physics.arcade.overlap(this.bullets, this.invaders, this.collisionHandler, null, this);  
   }
 
   createBubbles() {
@@ -63,28 +67,55 @@ module Bellend.State {
   }
 
   createInvaders() {
-        // Add 25 bricks to the group (5 columns and 5 lines)
-        this.bricks = this.add.group();
+        // Add 25 invaders to the group (5 columns and 5 lines)
+        this.invaders = this.add.group();
 
         for (let i = 0; i < 5; i++) {
             let inv:PIXI.Texture = invader.createInvader(i,this.game)
             for (let j = 0; j < 10; j++) {
-                // Create the brick at the correct position
-                let brick = this.add.sprite(55+j*60, 55+i*35, inv);
-                // Make sure the brick won't move when the ball hits it
-                brick.body.immovable = true;
-                // Add the brick to the group
-                this.bricks.add(brick);
+                // Create the invader at the correct position
+                let invader = this.add.sprite(55+j*60, 55+i*35, inv);
+                // Make sure the invader won't move when the bullet hits it
+                invader.body.immovable = true;         
+
+               invader.anchor.setTo(0.5,0.5);
+            //    invader.animations.add('fly',[0,1,2,3],20,true);
+             //   invader.play('fly');
+
+                // Add the invader to the group
+                this.invaders.add(invader);
             }
         }
+
+        let tween = this.game.add.tween(this.invaders).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+        tween.onRepeat.add(() => { this.invaders.y+=5 },this);
   }
 
-  hit(weapon,brick) {
-      brick.kill();
+  
+  fireBullet () {
+    //  To avoid them being allowed to fire too fast we set a time limit
+    if (this.game.time.now > this.bulletTime)
+    {
+        //  Grab the first bullet we can from the pool
+        this.bullet = this.bullets.getFirstExists(false);
+
+        if (this.bullet)
+        {
+            //  And fire it
+            this.bullet.reset(this.ship.x, this.ship.y + 8);
+            this.bullet.body.velocity.y = -400;
+            this.bulletTime = this.game.time.now + 200;
+        }
+    }
+  }
+
+  collisionHandler(bullet:Phaser.Sprite,invader:Phaser.Sprite) {
+      invader.kill();
+      bullet.kill();
     }
 
   render() {
-      this.weapon.debug();
+      
   }
 
   }
