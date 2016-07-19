@@ -31,7 +31,6 @@ module Bellend.State {
         //this.weapon.trackSprite(this.ship, 14, 0);
        
         this.createInvaders();
-     
         this.physics.arcade.overlap(this.weapon.bullets,this.bricks,function hit(x,y) {alert('collide')},null,this);   
     }
 
