@@ -11,6 +11,7 @@
         "app/scripts/State/Main.ts",
         "app/scripts/State/Menu.ts",
         "app/scripts/State/Preload.ts",
+        "app/scripts/State/Invader.ts",
         "app/scripts/Game.ts"
     ]
 }
