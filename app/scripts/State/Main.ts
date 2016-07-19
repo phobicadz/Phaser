@@ -196,8 +196,7 @@ module Bellend.State {
 
 restart () {
 
-    //  A new level starts
-    
+    //  A new level starts   
     //resets the life count
     this.lives.callAll('revive',this);
     //  And brings the aliens back from the dead :)
