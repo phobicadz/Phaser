@@ -22,6 +22,8 @@ var Bellend;
             constructor(...args) {
                 super(...args);
                 this.bulletTime = 0;
+                this.livingEnemies = [];
+                this.firingTimer = 0;
             }
             create() {
                 this.stage.backgroundColor = 0xFFFFFF;
@@ -30,7 +32,6 @@ var Bellend;
                 this.left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
                 this.right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
                 this.fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-                this.ship = this.add.sprite(320, 300, 'ship');
                 this.game.physics.arcade.enable(this.ship);
                 this.createInvaders();
                 this.bullets = this.game.add.group();
@@ -41,19 +42,39 @@ var Bellend;
                 this.bullets.setAll('anchor.y', 1);
                 this.bullets.setAll('outOfBoundsKill', true);
                 this.bullets.setAll('checkWorldBounds', true);
+                this.enemyBullets = this.game.add.group();
+                this.enemyBullets.enableBody = true;
+                this.enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
+                this.enemyBullets.createMultiple(30, 'bullet');
+                this.enemyBullets.setAll('anchor.x', 0.5);
+                this.enemyBullets.setAll('anchor.y', 1);
+                this.enemyBullets.setAll('outOfBoundsKill', true);
+                this.enemyBullets.setAll('checkWorldBounds', true);
+                this.lives = this.game.add.group();
+                this.game.add.text(this.game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
+                for (let i = 0; i < 3; i++) {
+                    let ship = this.lives.create(320, 300, 'ship');
+                    ship.anchor.set(0.5, 0, 5);
+                }
             }
             update() {
-                this.ship.body.velocity.x = 0;
-                if (this.left.isDown) {
-                    this.ship.body.velocity.x = -200;
+                if (this.ship.alive) {
+                    this.ship.body.velocity.x = 0;
+                    if (this.left.isDown) {
+                        this.ship.body.velocity.x = -200;
+                    }
+                    else if (this.right.isDown) {
+                        this.ship.body.velocity.x = 200;
+                    }
+                    if (this.fireButton.isDown) {
+                        this.fireBullet();
+                    }
+                    if (this.game.time.now > this.firingTimer) {
+                        this.enemyFires();
+                    }
+                    this.game.physics.arcade.overlap(this.bullets, this.invaders, this.collisionHandler, null, this);
+                    this.game.physics.arcade.overlap(this.enemyBullets, this.ship, this.enemyHitsPlayer, null, this);
                 }
-                else if (this.right.isDown) {
-                    this.ship.body.velocity.x = 200;
-                }
-                if (this.fireButton.isDown) {
-                    this.fireBullet();
-                }
-                this.game.physics.arcade.overlap(this.bullets, this.invaders, this.collisionHandler, null, this);
             }
             createBubbles() {
                 var delay = 0;
@@ -88,6 +109,38 @@ var Bellend;
                         this.bulletTime = this.game.time.now + 200;
                     }
                 }
+            }
+            enemyFires() {
+                this.enemyBullet = this.enemyBullets.getFirstExists(false);
+                this.livingEnemies.length = 0;
+                this.invaders.forEachAlive((invader) => {
+                    this.livingEnemies.push(invader);
+                }, this);
+                if (this.enemyBullet && this.livingEnemies.length > 0) {
+                    let random = this.game.rnd.integerInRange(0, this.livingEnemies.length - 1);
+                    let shooter = this.livingEnemies[random];
+                    this.enemyBullet.reset(shooter.body.x, shooter.body.y);
+                    this.game.physics.arcade.moveToObject(this.enemyBullet, this.ship, 120);
+                    this.firingTimer = this.game.time.now + 2000;
+                }
+            }
+            enemyHitsPlayer(player, bullet) {
+                bullet.kill();
+                let live = this.lives.getFirstAlive();
+                if (live) {
+                    live.kill();
+                }
+                if (this.lives.countLiving() < 1) {
+                    player.kill();
+                    this.enemyBullets.callAll('kill', this);
+                    this.game.input.onTap.addOnce(this.restart, this);
+                }
+            }
+            restart() {
+                this.lives.callAll('revive', this);
+                this.invaders.removeAll();
+                this.createInvaders();
+                this.ship.revive();
             }
             collisionHandler(bullet, invader) {
                 invader.kill();
