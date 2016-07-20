@@ -32,7 +32,9 @@ var Bellend;
                 this.left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT);
                 this.right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
                 this.fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-                this.game.physics.arcade.enable(this.ship);
+                this.player = this.game.add.sprite(300, 300, 'ship');
+                this.player.anchor.setTo(0.5, 0.5);
+                this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
                 this.createInvaders();
                 this.bullets = this.game.add.group();
                 this.bullets.enableBody = true;
@@ -53,18 +55,20 @@ var Bellend;
                 this.lives = this.game.add.group();
                 this.game.add.text(this.game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
                 for (let i = 0; i < 3; i++) {
-                    let ship = this.lives.create(320, 300, 'ship');
+                    let ship = this.lives.create(this.game.world.width - 100 + (30 * i), 60, 'ship');
                     ship.anchor.set(0.5, 0, 5);
+                    ship.angle = 90;
+                    ship.alpha = 0.4;
                 }
             }
             update() {
-                if (this.ship.alive) {
-                    this.ship.body.velocity.x = 0;
+                if (this.player.alive) {
+                    this.player.body.velocity.x = 0;
                     if (this.left.isDown) {
-                        this.ship.body.velocity.x = -200;
+                        this.player.body.velocity.x = -200;
                     }
                     else if (this.right.isDown) {
-                        this.ship.body.velocity.x = 200;
+                        this.player.body.velocity.x = 200;
                     }
                     if (this.fireButton.isDown) {
                         this.fireBullet();
@@ -73,7 +77,7 @@ var Bellend;
                         this.enemyFires();
                     }
                     this.game.physics.arcade.overlap(this.bullets, this.invaders, this.collisionHandler, null, this);
-                    this.game.physics.arcade.overlap(this.enemyBullets, this.ship, this.enemyHitsPlayer, null, this);
+                    this.game.physics.arcade.overlap(this.enemyBullets, this.player, this.enemyHitsPlayer, null, this);
                 }
             }
             createBubbles() {
@@ -104,7 +108,7 @@ var Bellend;
                 if (this.game.time.now > this.bulletTime) {
                     this.bullet = this.bullets.getFirstExists(false);
                     if (this.bullet) {
-                        this.bullet.reset(this.ship.x, this.ship.y + 8);
+                        this.bullet.reset(this.player.x, this.player.y + 8);
                         this.bullet.body.velocity.y = -400;
                         this.bulletTime = this.game.time.now + 200;
                     }
@@ -120,7 +124,7 @@ var Bellend;
                     let random = this.game.rnd.integerInRange(0, this.livingEnemies.length - 1);
                     let shooter = this.livingEnemies[random];
                     this.enemyBullet.reset(shooter.body.x, shooter.body.y);
-                    this.game.physics.arcade.moveToObject(this.enemyBullet, this.ship, 120);
+                    this.game.physics.arcade.moveToObject(this.enemyBullet, this.player, 120);
                     this.firingTimer = this.game.time.now + 2000;
                 }
             }
@@ -140,7 +144,7 @@ var Bellend;
                 this.lives.callAll('revive', this);
                 this.invaders.removeAll();
                 this.createInvaders();
-                this.ship.revive();
+                this.player.revive();
             }
             collisionHandler(bullet, invader) {
                 invader.kill();
