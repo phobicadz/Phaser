@@ -15,6 +15,10 @@ module Bellend.State {
     livingEnemies:Array<Phaser.Sprite> = [];
     lives:Phaser.Group;
     firingTimer:number = 0;
+    stateText:Phaser.Text;
+    score:number = 0;
+    scoreString:string = '';
+    scoreText:Phaser.Text;
 
     create() {
         this.stage.backgroundColor = 0xFFFFFF;    
@@ -58,12 +62,22 @@ module Bellend.State {
         this.game.add.text(this.game.world.width - 100, 10, 'Lives : ', { font: '34px Arial', fill: '#fff' });
 
         for (let i=0;i<3;i++) {
-            // add lives along top of screen
+            // add lives along top side of screen
             let ship = this.lives.create(this.game.world.width - 100 + (30 * i), 60, 'ship');
             ship.anchor.set(0.5,0,5);
             ship.angle = 90;
             ship.alpha = 0.4;
         }
+
+        // Text
+        this.stateText = this.game.add.text(this.game.world.centerX,this.game.world.centerY,' ', { font: '84px Arial', fill: '#000' });
+        this.stateText.anchor.setTo(0.5, 0.5);
+        this.stateText.visible = false;
+
+         //  The score
+        this.scoreString = 'Score : ';
+        this.scoreText = this.game.add.text(10, 10, this.scoreString + this.score, { font: '34px Arial', fill: '#000' });
+
 
     }
 
@@ -198,6 +212,10 @@ module Bellend.State {
     {
         player.kill();
         this.enemyBullets.callAll('kill',this);
+
+        this.stateText.text=" GAME OVER \n Click to restart";
+        this.stateText.visible = true;
+
         //the "click to restart" handler
         this.game.input.onTap.addOnce(this.restart,this);
     }
@@ -215,18 +233,39 @@ restart () {
     //revives the player
     this.player.revive();
     //hides the text
-   // stateText.visible = false;
+    this.stateText.visible = false;
 
 }
 
   collisionHandler(bullet:Phaser.Sprite,invader:Phaser.Sprite) {
       invader.kill();
       bullet.kill();
+
+       //  Increase the score
+    this.score += 20;
+    this.scoreText.text = this.scoreString + this.score;
+
+    //  And create an explosion :)
+    // let explosion = explosions.getFirstExists(false);
+    // explosion.reset(alien.body.x, alien.body.y);
+    // explosion.play('kaboom', 30, false, true);
+
+    if (this.invaders.countLiving() == 0)
+    {
+        this.score += 1000;
+        this.scoreText.text = this.scoreString + this.score;
+
+        this.enemyBullets.callAll('kill',this);
+        this.stateText.text = " You Won, \n Click to restart";
+        this.stateText.visible = true;
+
+        //the "click to restart" handler
+        this.game.input.onTap.addOnce(this.restart,this);
     }
+}
 
   render() {
-      
-  }
+      }
 
   }
 }

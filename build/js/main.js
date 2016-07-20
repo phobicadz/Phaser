@@ -24,6 +24,8 @@ var Bellend;
                 this.bulletTime = 0;
                 this.livingEnemies = [];
                 this.firingTimer = 0;
+                this.score = 0;
+                this.scoreString = '';
             }
             create() {
                 this.stage.backgroundColor = 0xFFFFFF;
@@ -60,6 +62,11 @@ var Bellend;
                     ship.angle = 90;
                     ship.alpha = 0.4;
                 }
+                this.stateText = this.game.add.text(this.game.world.centerX, this.game.world.centerY, ' ', { font: '84px Arial', fill: '#000' });
+                this.stateText.anchor.setTo(0.5, 0.5);
+                this.stateText.visible = false;
+                this.scoreString = 'Score : ';
+                this.scoreText = this.game.add.text(10, 10, this.scoreString + this.score, { font: '34px Arial', fill: '#000' });
             }
             update() {
                 if (this.player.alive) {
@@ -137,6 +144,8 @@ var Bellend;
                 if (this.lives.countLiving() < 1) {
                     player.kill();
                     this.enemyBullets.callAll('kill', this);
+                    this.stateText.text = " GAME OVER \n Click to restart";
+                    this.stateText.visible = true;
                     this.game.input.onTap.addOnce(this.restart, this);
                 }
             }
@@ -145,10 +154,21 @@ var Bellend;
                 this.invaders.removeAll();
                 this.createInvaders();
                 this.player.revive();
+                this.stateText.visible = false;
             }
             collisionHandler(bullet, invader) {
                 invader.kill();
                 bullet.kill();
+                this.score += 20;
+                this.scoreText.text = this.scoreString + this.score;
+                if (this.invaders.countLiving() == 0) {
+                    this.score += 1000;
+                    this.scoreText.text = this.scoreString + this.score;
+                    this.enemyBullets.callAll('kill', this);
+                    this.stateText.text = " You Won, \n Click to restart";
+                    this.stateText.visible = true;
+                    this.game.input.onTap.addOnce(this.restart, this);
+                }
             }
             render() {
             }
