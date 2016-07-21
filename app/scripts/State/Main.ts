@@ -30,7 +30,7 @@ module Bellend.State {
         this.fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);   
        
         // The hero !
-        this.player = this.game.add.sprite(300,300,'ship');
+        this.player = this.game.add.sprite(300,500,'ship');
         this.player.anchor.setTo(0.5, 0.5);
         this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
 
@@ -107,6 +107,7 @@ module Bellend.State {
             // add collision handlers
             this.game.physics.arcade.overlap(this.bullets, this.invaders, this.collisionHandler, null, this);  
             this.game.physics.arcade.overlap(this.enemyBullets, this.player, this.enemyHitsPlayer, null, this);
+            this.game.physics.arcade.overlap(this.invaders,this.player,this.enemyHitsPlayer,null,this);
             }    
     }
   

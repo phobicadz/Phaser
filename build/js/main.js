@@ -85,6 +85,7 @@ var Bellend;
                     }
                     this.game.physics.arcade.overlap(this.bullets, this.invaders, this.collisionHandler, null, this);
                     this.game.physics.arcade.overlap(this.enemyBullets, this.player, this.enemyHitsPlayer, null, this);
+                    this.game.physics.arcade.overlap(this.invaders, this.player, this.enemyHitsPlayer, null, this);
                 }
             }
             createBubbles() {
